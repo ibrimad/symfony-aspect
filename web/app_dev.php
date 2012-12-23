@@ -19,22 +19,26 @@ use Symfony\Component\HttpFoundation\Request;
 include __DIR__.'/../vendor/lisachenko/go-aop-php/src/Go/Core/AspectKernel.php';
 include __DIR__.'/../app/DemoAspectKernel.php';
 
+// Prevent an error about nesting level
+ini_set('xdebug.max_nesting_level', 300);
+
 // Initialize aspect container
 $aspectKernel = DemoAspectKernel::getInstance();
 $aspectKernel->init(array(
     'autoload' => array(
+        'Aspect'           => __DIR__.'/../src/Aspect',
         'Go'               => __DIR__.'/../vendor/lisachenko/go-aop-php/src/',
         'TokenReflection'  => __DIR__.'/../vendor/andrewsville/php-token-reflection/',
         'Doctrine\\Common' => __DIR__.'/../vendor/doctrine/common/lib/'
     ),
     'includePaths' => array(
         __DIR__.'/../src/',
+
     ),
     'cacheDir' => __DIR__ .'/../app/cache/aspect',
     'appDir'   => __DIR__.'/../',
     'debug' => true,
 ));
-$loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 require_once __DIR__.'/../app/AppKernel.php';
 
 $kernel = new AppKernel('dev', true);

@@ -6,6 +6,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 
+namespace Aspect;
+
 use Go\Aop\Aspect;
 use Go\Core\AspectKernel;
 use Go\Aop\Intercept\FieldAccess;
@@ -20,13 +22,21 @@ use Go\Lang\Annotation\Pointcut;
  */
 class TestAspect implements Aspect
 {
+    public function __construct()
+    {
+        ob_start();
+    }
+
+    public function __destruct()
+    {
+        ob_end_flush();
+    }
 
     /**
      * Method that should be called before real method
      *
      * @param MethodInvocation $invocation Invocation
-     * @Before("within(Acme\DemoBundle\**)")
-     * @After("execution(* **DemoController->*(*))")
+     * @Before("within(Acme\**)")
      */
     public function beforeMethodExecution(MethodInvocation $invocation)
     {
@@ -37,30 +47,5 @@ class TestAspect implements Aspect
              $invocation->getMethod()->getName(),
              '()',
              "<br>\n";
-    }
-
-    /**
-     * Method that should be called around property
-     *
-     * @param FieldAccess $property Joinpoint
-     *
-     * Around("access(protected *->*e*)")
-     * @return mixed
-     */
-    public function aroundFieldAccess(FieldAccess $property)
-    {
-        $type = $property->getAccessType() === FieldAccess::READ ? 'read' : 'write';
-        $value = $property->proceed();
-        echo
-            "Calling Around Interceptor for field: ",
-            get_class($property->getThis()),
-            "->",
-            $property->getField()->getName(),
-            ", access: $type",
-            ", value: ",
-            json_encode($value),
-            "<br>\n";
-
-        return $value;
     }
 }

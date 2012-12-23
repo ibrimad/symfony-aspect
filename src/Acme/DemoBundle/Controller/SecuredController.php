@@ -6,7 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Core\SecurityContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use JMS\SecurityExtraBundle\Annotation\Secure;
+use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * @Route("/demo/secured")
@@ -59,11 +60,15 @@ class SecuredController extends Controller
 
     /**
      * @Route("/hello/admin/{name}", name="_demo_secured_hello_admin")
-     * @Secure(roles="ROLE_ADMIN")
      * @Template()
      */
     public function helloadminAction($name)
     {
+        /** @var $sc SecurityContextInterface */
+        $sc = $this->get('security.context');
+        if (!$sc->isGranted('ROLE_ADMIN')) {
+            throw new AccessDeniedHttpException("Restricted access");
+        }
         return array('name' => $name);
     }
 }

@@ -34,6 +34,6 @@ class DemoAspectKernel extends AspectKernel
      */
     protected function configureAop(AspectContainer $container)
     {
-        $container->registerAspect(new TestAspect(123));
+        $container->registerAspect(new Aspect\TestAspect(123));
     }
 }
